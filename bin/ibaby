@@ -1,6 +1,35 @@
 #! /usr/bin/env node
 
 const program = require('commander');
+const Util = require('../lib/util');
+const fs = require('fs-extra');
+const signale = require('signale');
 
+// Get version
 program
-    .version()
+  .version(Util.getPkgInfo().version);
+
+// Command: ibaby init [url]
+program
+  .command('init [url]')
+  .description('init Ibaby')
+  .action(function (url) {
+
+  })
+
+// Reminders to update new versions
+function remindNewVersion (cb) {
+  const remindFile = path.join(Util.getIbabyPath(), '.remind.json');
+  let remindInfo = {};
+  if (fs.existsSync(remindFile)) {
+    try {
+      remindInfo = JSON.parse(String(fs.readFileSync(remindFile)));
+    } catch (e) {
+      remindInfo = {};
+      signale.error('Error reading remind.json');
+    }
+  }
+  if (!remindInfo.update) {
+    remindInfo.update = {};
+  }
+}
