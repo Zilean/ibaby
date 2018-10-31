@@ -1,9 +1,14 @@
 #! /usr/bin/env node
 
+const path = require('path');
 const program = require('commander');
 const Util = require('../lib/util');
 const fs = require('fs-extra');
 const signale = require('signale');
+const axios = require('axios');
+
+const getVersionPath = '/api/version';
+const setting = Util.getSetting();
 
 // Get version
 program
@@ -14,8 +19,10 @@ program
   .command('init [url]')
   .description('init Ibaby')
   .action(function (url) {
-
+    remindNewVersion();
   })
+
+program.parse(process.argv);
 
 // Reminders to update new versions
 function remindNewVersion (cb) {
@@ -32,4 +39,22 @@ function remindNewVersion (cb) {
   if (!remindInfo.update) {
     remindInfo.update = {};
   }
+  const updateInfo = remindInfo.update;
+  if (!updateInfo.date || !Util.isToday(updateInfo.date)) {
+    checkIbabyVersion();
+  } else {
+    cb();
+  }
+}
+
+function checkIbabyVersion (successCb, errorCb) {
+  axios.get(setting.report_url + getVersionPath)
+    .then(function (response) {
+        // handle success
+        // console.log(response);
+    })
+    .catch(function (error) {
+        // handle error
+        // console.log(error);
+    })
 }
